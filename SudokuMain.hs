@@ -1,15 +1,22 @@
 import Sudoku
+import System.Environment
 
 main = do
-       inpStr <- readFile "sudoku1.txt"
-       let sudokuGrid = Sudoku.loadFromString inpStr
-       putStrLn (show sudokuGrid)
-       putStrLn ""
-       putStrLn ("first row:" ++ (show (Sudoku.extractRow sudokuGrid 0)))
-       putStrLn ("last row:" ++ (show (Sudoku.extractRow sudokuGrid 8)))
-       putStrLn ""
-       putStrLn ("first column:" ++ (show (Sudoku.extractColumn sudokuGrid 0)))
-       putStrLn ("last column:" ++ (show (Sudoku.extractColumn sudokuGrid 8)))
-       putStrLn ""
-       putStrLn ("first quadrant:" ++ (show (Sudoku.extractQuadrant sudokuGrid (0, 0))))
-       putStrLn ("last quadrant:" ++ (show (Sudoku.extractQuadrant sudokuGrid (8, 8))))
+       args <- System.Environment.getArgs
+       if length args /= 1 
+         then do
+           putStrLn "Please provide the path to a Sudoku puzzle files as argument."
+         else do
+           inpStr <- readFile "sudoku1.txt"
+           let sudokuGrid = Sudoku.loadFromString inpStr
+           putStrLn (show sudokuGrid)
+           putStrLn ("Solving puzzle...")
+           putStrLn ""
+           let solvedGrid = solve sudokuGrid
+           putStrLn (show solvedGrid)  
+
+
+solve :: Sudoku.SudokuGrid -> Sudoku.SudokuGrid
+solve grid = grid
+
+
