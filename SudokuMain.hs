@@ -1,4 +1,5 @@
 import Sudoku
+import SudokuSolver
 import System.Environment
 
 main = do
@@ -12,11 +13,5 @@ main = do
            putStrLn (show sudokuGrid)
            putStrLn ("Solving puzzle...")
            putStrLn ""
-           let solvedGrid = solve sudokuGrid
+           let solvedGrid = SudokuSolver.solve sudokuGrid
            putStrLn (show solvedGrid)  
-
-
-solve :: Sudoku.SudokuGrid -> Sudoku.SudokuGrid
-solve grid = grid
-
-
