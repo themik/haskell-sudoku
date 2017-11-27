@@ -10,6 +10,7 @@ data CellState = Empty | -- cell is currently empty
                  Guess -- value set as part of the solution algorithm
                        -- there is a chance it is wrong 
 
+-- Representation of a Sudoku Grid
 data Grid = Grid [[(Int , CellState)]]
 
 -- Check the grid is 9x9 and only filled with 0 to 9s
@@ -29,13 +30,14 @@ loadFromString input = Grid (map convertLine (lines input)) where
   digitToCell x | x == 0    = (x, Empty)
                 | otherwise = (x, Fixed)
 
-
+-- Implemantation of type class Show for CellState
 instance Show CellState where
   show Empty    = "empty"
   show Fixed    = "fixed"
   show Definite = "definite"
   show Guess    = "guess"
 
+-- Equality type class for CellState
 instance Eq CellState where
   Empty == Empty       = True
   Fixed == Fixed       = True
@@ -43,7 +45,7 @@ instance Eq CellState where
   Guess == Guess       = True
   x == y               = False
 
--- Implementation of type class Show
+-- Implementation of type class Show for Grid
 instance Show Grid where
   show (Grid rows) = unlines (map printRow rows) where
 --  
@@ -53,8 +55,10 @@ instance Show Grid where
     addFldToRow row fld | row == "" = showFld fld
                         | otherwise = row ++ " " ++ showFld fld
     showFld :: (Int, CellState) -> String
-    showFld (x, _) | x == 0  = "_"
-                   | otherwise = show x
+    showFld (x, Empty)    = "_" -- Empty fields displayed as underscore
+    showFld (x, Fixed)    = show x -- For fixed fields just print the number
+    showFld (x, Definite) = "\x1b[32m" ++ show x ++ "\x1b[0m" -- Definites in ANSI green
+    showFld (x, Guess)    = "\x1b[33m" ++ show x ++ "\x1b[0m" -- Guesses in ANSI yellow
 
 -- Count number of empty cells in grid
 countEmpties :: Grid -> Int
@@ -170,6 +174,13 @@ isValidPosX :: Grid -> (Int, Int) -> Int -> Bool
 isValidPosX grid pos val = (not (elem val (extractRowX grid pos))) &&
                            (not (elem val (extractColumnX grid pos))) &&
                            (not (elem val (extractQuadrantX grid pos))) 
+
+-- Check if the entire grid satisfies all row, column and quadrant constraints
+isValidGrid :: Grid -> Bool
+isValidGrid grid = not (elem False ( 
+                     map (isValidLine . (extractRow grid)) [0 .. 8] ++
+                     map (isValidLine . (extractColumn grid)) [0 .. 8] ++
+                     map (isValidLine . (extractQuadrant grid)) [(0,0) , (0,3), (0,6), (3,0), (3,3), (3,6), (6,0), (6,3), (6,6)]))
 
 
 -- Check if a line (row, column or quadrant) is valid i.e. contains no duplicate numbers
