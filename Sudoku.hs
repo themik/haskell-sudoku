@@ -105,10 +105,14 @@ nextEmptyPos grid pos | pos' == Nothing                           = Nothing
 
 -- Set Definite Value in a grid, returns the new Grid where the value is set
 setDefiniteVal :: Grid -> (Int, Int) -> Int -> Grid
-setDefiniteVal (Grid rows) (rowIdx, colIdx) val = Grid ((take rowIdx rows) ++ [(mdfRow (rows!!rowIdx) colIdx val)] ++ (drop (rowIdx+1) rows)) where
- --
- mdfRow :: [(Int, CellState)] -> Int -> Int -> [(Int, CellState)]
- mdfRow row colIdx val = (take colIdx row) ++ [(val, Definite)] ++ (drop (colIdx+1) row)
+setDefiniteVal (Grid rows) (rowIdx, colIdx) val = Grid ((take rowIdx rows) ++ [(mdfRow (rows!!rowIdx) colIdx val Definite)] ++ (drop (rowIdx+1) rows))
+ 
+-- Set Guess Value in a grid, returns the new Grid where the value is set
+setGuessVal :: Grid -> (Int, Int) -> Int -> Grid
+setGuessVal (Grid rows) (rowIdx, colIdx) val = Grid ((take rowIdx rows) ++ [(mdfRow (rows!!rowIdx) colIdx val Guess)] ++ (drop (rowIdx+1) rows))
+ 
+mdfRow :: [(Int, CellState)] -> Int -> Int -> CellState -> [(Int, CellState)]
+mdfRow row colIdx val state = (take colIdx row) ++ [(val, state)] ++ (drop (colIdx+1) row)
 
 -- Extraction of a single row from a grid given a row number (excluding zeros)
 extractRow :: Grid -> Int -> [Int]
